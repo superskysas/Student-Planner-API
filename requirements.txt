@@ -1,0 +1,31 @@
+# FastAPI и связанные зависимости
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+jinja2>=3.1.0
+python-multipart>=0.0.5
+
+# MongoDB
+motor>=3.3.0
+pymongo>=4.5.0
+
+# Аутентификация и безопасность
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+bcrypt>=4.0.1
+
+# Валидация и модели
+pydantic[email]>=2.0.0
+pydantic-settings>=2.0.0
+
+# HTTP клиент для внешних API
+httpx>=0.24.0
+
+# Утилиты
+python-dotenv>=1.0.0
+
+# Разработка и тестирование (опционально)
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+flake8>=5.0.0
+isort>=5.12.0
