@@ -39,30 +39,25 @@ async def import_nager(
         HTTPException 502: Внешний сервис недоступен
     """
     try:
-        # Получаем данные от Nager API
         holidays_data = await fetch_nager_public_holidays(year, country)
         
         if not holidays_data:
-            # Если нет праздников, возвращаем пустой результат
             return {
                 "imported": 0,
                 "skipped": 0,
                 "details": []
             }
         
-        # Нормализуем данные для вставки
         normalized_tasks = [
             normalize_nager_item(holiday, country) 
             for holiday in holidays_data
         ]
         
-        # Используем существующий метод для дедупликации
         imported_count, inserted_tasks = await tasks.insert_many_nager(
             user["id"], 
             [TaskDict(task) for task in normalized_tasks]
         )
         
-        # Формируем details с информацией о каждой импортированной задаче
         details: List[Dict[str, Any]] = [
             {
                 "id": task["id"],
@@ -84,4 +79,4 @@ async def import_nager(
             raise
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY,
-                             detail="Nager.Date unavailable") from exc
+                            detail="Nager.Date unavailable") from exc

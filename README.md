@@ -184,7 +184,7 @@ src/
 │   │   └── importers.py # Импорт внешних данных
 │   ├── core/          # Основная конфигурация
 │   │   ├── config.py  # Настройки приложения
-│   │   ├── deps.py    # Dependency Injection
+│   │   ├── deps.py    # Проверка пользователя
 │   │   └── security.py # JWT и безопасность
 │   ├── db/            # База данных
 │   │   ├── mongo.py   # Подключение к MongoDB

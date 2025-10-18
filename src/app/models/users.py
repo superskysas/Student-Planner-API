@@ -7,7 +7,6 @@ from pydantic import BaseModel, EmailStr, Field, constr
 class UserCreate(BaseModel):
     email: EmailStr
     password: constr(min_length=8) = Field(..., description="Password, at least 8 characters")
-# можно заменить на Annotated[str, StringConstraints(min_length=8)]
 
 
 class UserOut(BaseModel):
@@ -20,7 +19,6 @@ class UserLogin(BaseModel):
     password: str = Field(..., min_length=1, description="Пароль пользователя")
     
     class Config:
-        # Позволяет использовать с form-data
         from_attributes = True
 
 

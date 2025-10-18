@@ -8,7 +8,6 @@ from typing import Any, Optional, Protocol
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
 
-# ===== Pydantic-like plain dicts for repositories =====
 UserDict = dict[str, Any]
 TaskDict = dict[str, Any]
 
@@ -16,7 +15,6 @@ ALLOWED_TYPES = {"task", "meeting", "deadline", "holiday", "news"}
 ALLOWED_STATUS = {"todo", "done"}
 
 
-# ===== Protocols (интерфейсы), чтобы удобно мокировать в тестах =====
 class UsersRepository(Protocol):
     async def create(self, email: str, password_hash: str) -> UserDict: ...
     async def get_by_email(self, email: str) -> Optional[UserDict]: ...
@@ -34,7 +32,6 @@ class TasksRepository(Protocol):
     async def insert_many_nager(self, user_id: str, items: list[TaskDict]) -> tuple[int, list[TaskDict]]: ...
 
 
-# ===== Motor implementations =====
 class MotorUsersRepository(UsersRepository):
     def __init__(self, coll: AsyncIOMotorCollection) -> None:
         self.coll = coll
@@ -85,7 +82,7 @@ class MotorTasksRepository(TasksRepository):
         doc = {
             "user_id": ObjectId(user_id),
             "title": data["title"],
-            "date": data["date"],  # YYYY-MM-DD
+            "date": data["date"], 
             "type": data.get("type", "task"),
             "status": data.get("status", "todo"),
             "source": data.get("source", "local"),
@@ -132,7 +129,6 @@ class MotorTasksRepository(TasksRepository):
             return 0, []
         for it in items:
             it["user_id"] = ObjectId(user_id)
-        # Используем upsert по уникальному индексу meta.source_id+user_id (создан при старте)
         inserted: list[TaskDict] = []
         for it in items:
             res = await self.coll.update_one(
@@ -147,7 +143,6 @@ class MotorTasksRepository(TasksRepository):
         return len(inserted), inserted
 
 
-# ===== In-memory repositories для тестов =====
 class InMemoryUsersRepository(UsersRepository):
     def __init__(self) -> None:
         self._by_id: dict[str, UserDict] = {}
@@ -172,7 +167,7 @@ class InMemoryUsersRepository(UsersRepository):
 
 class InMemoryTasksRepository(TasksRepository):
     def __init__(self) -> None:
-        self._items: dict[str, TaskDict] = {}  # id -> task
+        self._items: dict[str, TaskDict] = {}  
 
     async def create(self, user_id: str, data: TaskDict) -> TaskDict:
         tid = uuid.uuid4().hex
@@ -222,7 +217,6 @@ class InMemoryTasksRepository(TasksRepository):
         return True
 
     async def insert_many_nager(self, user_id: str, items: list[TaskDict]) -> tuple[int, list[TaskDict]]:
-        # Дедуп по (user_id, meta.source_id)
         existing_source_ids = {
             d["meta"].get("source_id")
             for d in self._items.values()

@@ -29,7 +29,6 @@ async def get_current_user(
     Raises:
         HTTPException 401: При отсутствии, невалидности токена или несуществующем пользователе
     """
-    # Проверяем только заголовок Authorization
     if not credentials or not credentials.credentials:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -38,8 +37,6 @@ async def get_current_user(
         )
     
     token = credentials.credentials
-    
-    # Декодируем JWT токен
     token_payload = decode_token(token)
     if not token_payload:
         raise HTTPException(
@@ -48,7 +45,6 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Извлекаем user_id из полезной нагрузки токена
     user_id = token_payload.get("sub")
     if not user_id:
         raise HTTPException(
@@ -58,7 +54,6 @@ async def get_current_user(
         )
     
     try:
-        # Получаем пользователя из базы данных
         user = await users.get_by_id(user_id)
         if not user:
             raise HTTPException(
@@ -70,10 +65,8 @@ async def get_current_user(
         return user
         
     except HTTPException:
-        # Повторно поднимаем HTTPException без логирования
         raise
     except Exception as e:
-        # Логируем только неожиданные ошибки (не HTTPException)
         print(f"Unexpected error during user authentication: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

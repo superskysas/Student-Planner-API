@@ -53,7 +53,6 @@ async def ui_tasks():
 
 @app.on_event("startup")
 async def on_startup() -> None:
-    # Настройка логирования
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"

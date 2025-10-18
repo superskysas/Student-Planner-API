@@ -39,17 +39,14 @@ async def close_mongo(app: FastAPI) -> None:
 
 
 def _get_db_from_app() -> AsyncIOMotorDatabase:
-    from src.app.main import app  # локальный импорт, чтобы избежать цикла при старте
+    from src.app.main import app 
     db = getattr(app.state, MONGO_DB_KEY, None)
     if db is None:
-        # Ленивая инициализация (на случай запуска без событий приложения — например, в некоторых средах)
         client = AsyncIOMotorClient(settings.MONGO_DSN)
         db = client[settings.MONGO_DB]
         app.state.__setattr__(MONGO_DB_KEY, db)
     return db
 
-
-# Фабрики репозиториев (по умолчанию — Motor)
 async def get_users_repo() -> UsersRepository:
     db = _get_db_from_app()
     return MotorUsersRepository(db["users"])
